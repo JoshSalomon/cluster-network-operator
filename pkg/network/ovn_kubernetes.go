@@ -532,9 +532,24 @@ func renderOVNKubernetes(conf *operv1.NetworkSpec, bootstrapResult *bootstrap.Bo
 func shouldRenderIPsec(conf *operv1.OVNKubernetesConfig, bootstrapResult *bootstrap.BootstrapResult) (renderIPsecMachineConfig, renderIPsecDaemonSet,
 	renderIPsecOVN, renderIPsecHostDaemonSet, renderIPsecContainerizedDaemonSet, renderIPsecDaemonSetAsCreateWaitOnly bool) {
 	isHypershiftHostedCluster := bootstrapResult.Infra.HostedControlPlane != nil
-	isIPsecEnabled := conf.IPsecConfig != nil
 	isIpsecUpgrade := bootstrapResult.OVN.IPsecUpdateStatus != nil && bootstrapResult.OVN.IPsecUpdateStatus.LegacyIPsecUpgrade
 	isOVNIPsecActive := bootstrapResult.OVN.IPsecUpdateStatus != nil && bootstrapResult.OVN.IPsecUpdateStatus.OVNIPsecActive
+
+	// Find the IPsec mode from Ipsec.config
+	// Ipsec.config == nil (bw compatibility) || ipsecConfig == Off ==> ipsec is disabled
+	// ipsecConfig.mode == "" (bw compatibility) || ipsec.Config == Full ==> ipsec is enabled for NS and EW
+	// ipsecConfig.mode == External ==> ipsec is enabled for NS only
+
+	mode := operv1.IPsecModeOff // Sould stay so if conf.IPsecConfig == nil
+	if conf.IPsecConfig != nil {
+		if conf.IPsecConfig.Mode != "" {
+			mode = conf.IPsecConfig.Mode
+		} else {
+			mode = operv1.IPsecModeFull // BW compatiniglity with existing configs
+		}
+	}
+	isIPsecEnabled := mode != operv1.IPsecModeOff
+	klog.Infof("IPsec mode: %s, isIPsecEnabled: %v", mode, isIPsecEnabled)
 
 	// On upgrade, we will just remove any existing ipsec deployment without making any
 	// change to them. So during upgrade, we must keep track if IPsec MachineConfigs are
