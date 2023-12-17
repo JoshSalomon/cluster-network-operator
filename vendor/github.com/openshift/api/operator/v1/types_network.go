@@ -129,7 +129,7 @@ const (
 )
 
 // NetworkMigration represents the cluster network configuration.
-// +openshift:validation:FeatureSetAwareXValidation:featureSet=CustomNoUpgrade;TechPreviewNoUpgrade,rule="!has(self.mtu) || !has(self.networkType) || self.networkType == ” || has(self.mode) && self.mode == 'Live'",message="networkType migration in mode other than 'Live' may not be configured at the same time as mtu migration"
+// +openshift:validation:FeatureSetAwareXValidation:featureSet=CustomNoUpgrade;TechPreviewNoUpgrade,rule="!has(self.mtu) || !has(self.networkType) || self.networkType == '' || has(self.mode) && self.mode == 'Live'",message="networkType migration in mode other than 'Live' may not be configured at the same time as mtu migration"
 type NetworkMigration struct {
 	// networkType is the target type of network migration. Set this to the
 	// target network type to allow changing the default network. If unset, the
@@ -390,7 +390,7 @@ type OVNKubernetesConfig struct {
 	// ipsecConfig enables and configures IPsec for pods on the pod network within the
 	// cluster.
 	// +optional
-	// +kubebuilder:default={"mode": "Off"}
+	// +kubebuilder:default={"mode": "Disabled"}
 	IPsecConfig *IPsecConfig `json:"ipsecConfig,omitempty"`
 	// policyAuditConfig is the configuration for network policy audit events. If unset,
 	// reported defaults are used.
@@ -429,15 +429,14 @@ type HybridOverlayConfig struct {
 	HybridOverlayVXLANPort *uint32 `json:"hybridOverlayVXLANPort,omitempty"`
 }
 
+// +kubebuilder:validation:XValidation:rule="self == oldSelf || has(self.mode)",message="ipsecConfig.mode is required"
 type IPsecConfig struct {
-	// Mode defines the ipsec configuration level, 'Off' disable ipsec on the node level,
+	// mode defines the ipsec configuration level, 'Disabled' disable ipsec on the node level,
 	// 'External' enables ipsec on the node level but requires the user to configure it (mostly for externl
 	// communication), and 'Full' enables ipsec on the node level and configures it for secure communciation
 	// between pods in the cluster (the user needs to configure it for external secure communciation).
-	// +kubebuilder:validation:Enum=Off;External;Full
+	// +kubebuilder:validation:Enum=Disabled;External;Full
 	// +optional
-	// +kubebuilder:default=Off
-	// +default="Off"
 	Mode IPsecMode `json:"mode,omitempty"`
 }
 
@@ -707,7 +706,7 @@ type IPsecMode string
 
 const (
 	// IPsecModeOff disables IPsec altogether
-	IPsecModeOff IPsecMode = "Off"
+	IPsecModeOff IPsecMode = "Disabled"
 	// IPsecModeExternal enables IPsec on the node level, but expects the user to configure it using k8s-nmstate or
 	// other neans - it is most useful for secure communication from the cluster to external endpoints
 	IPsecModeExternal IPsecMode = "External"

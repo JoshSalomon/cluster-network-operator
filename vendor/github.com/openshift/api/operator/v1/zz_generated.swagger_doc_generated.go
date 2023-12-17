@@ -1375,7 +1375,7 @@ func (IPFIXConfig) SwaggerDoc() map[string]string {
 }
 
 var map_IPsecConfig = map[string]string{
-	"mode": "Mode defines the ipsec configuration level, 'Off' disable ipsec on the node level, 'External' enables ipsec on the node level but requires the user to configure it (mostly for externl communication), and 'Full' enables ipsec on the node level and configures it for secure communciation between pods in the cluster (the user needs to configure it for external secure communciation).",
+	"mode": "mode defines the ipsec configuration level, 'Disabled' disable ipsec on the node level, 'External' enables ipsec on the node level but requires the user to configure it (mostly for externl communication), and 'Full' enables ipsec on the node level and configures it for secure communciation between pods in the cluster (the user needs to configure it for external secure communciation).",
 }
 
 func (IPsecConfig) SwaggerDoc() map[string]string {

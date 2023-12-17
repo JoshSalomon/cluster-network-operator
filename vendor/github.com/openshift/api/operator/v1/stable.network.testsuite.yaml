@@ -264,3 +264,51 @@ tests:
         logLevel: Normal
         operatorLogLevel: Normal
         migration: {}
+  - name: "IPsec - Empty ipsecConfig is allowed"
+    initial: |
+      apiVersion: operator.openshift.io/v1
+      kind: Network
+      spec: 
+        defaultNetwork:
+          ovnKubernetesConfig:
+            ipsecConfig: {}
+    expected: |
+      apiVersion: operator.openshift.io/v1
+      kind: Network
+      spec: 
+        defaultNetwork:
+          ovnKubernetesConfig:
+            ipsecConfig: {}
+        disableNetworkDiagnostics: false
+        logLevel: Normal
+        operatorLogLevel: Normal
+  - name: "IPsec - Populated ipsecConfig is allowed"
+    initial: |
+      apiVersion: operator.openshift.io/v1
+      kind: Network
+      spec: 
+        defaultNetwork:
+          ovnKubernetesConfig:
+            ipsecConfig:
+              mode: Full
+    expected: |
+      apiVersion: operator.openshift.io/v1
+      kind: Network
+      spec: 
+        defaultNetwork:
+          ovnKubernetesConfig:
+            ipsecConfig:
+              mode: Full
+        disableNetworkDiagnostics: false
+        logLevel: Normal
+        operatorLogLevel: Normal
+  - name: "IPsec - empty string is not allowed"
+    initial: |
+      apiVersion: operator.openshift.io/v1
+      kind: Network
+      spec: 
+        defaultNetwork:
+          ovnKubernetesConfig:
+            ipsecConfig: 
+              mode: ""
+    expectedError: "Unsupported value: \"\": supported values: \"Disabled\", \"External\", \"Full\""
