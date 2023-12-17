@@ -1374,6 +1374,14 @@ func (IPFIXConfig) SwaggerDoc() map[string]string {
 	return map_IPFIXConfig
 }
 
+var map_IPsecConfig = map[string]string{
+	"mode": "Mode defines the ipsec configuration level, 'Off' disable ipsec on the node level, 'External' enables ipsec on the node level but requires the user to configure it (mostly for externl communication), and 'Full' enables ipsec on the node level and configures it for secure communciation between pods in the cluster (the user needs to configure it for external secure communciation).",
+}
+
+func (IPsecConfig) SwaggerDoc() map[string]string {
+	return map_IPsecConfig
+}
+
 var map_IPv4GatewayConfig = map[string]string{
 	"":                         "IPV4GatewayConfig holds the configuration paramaters for IPV4 connections in the GatewayConfig for OVN-Kubernetes",
 	"internalMasqueradeSubnet": "internalMasqueradeSubnet contains the masquerade addresses in IPV4 CIDR format used internally by ovn-kubernetes to enable host to service traffic. Each host in the cluster is configured with these addresses, as well as the shared gateway bridge interface. The values can be changed after installation. The subnet chosen should not overlap with other networks specified for OVN-Kubernetes as well as other networks used on the host. Additionally the subnet must be large enough to accommodate 6 IPs (maximum prefix length /29). When omitted, this means no opinion and the platform is left to choose a reasonable default which is subject to change over time. The current default subnet is 169.254.169.0/29 The value must be in proper IPV4 CIDR format",
